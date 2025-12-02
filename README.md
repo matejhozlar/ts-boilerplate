@@ -1,1 +1,1 @@
-# ts-boilerplate
+matejhozlar - personal boilerplate
