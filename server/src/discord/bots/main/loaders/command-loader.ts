@@ -59,14 +59,22 @@ export async function loadCommandHandlers(): Promise<
         pathToFileURL(filePath).href
       )) as CommandModule;
 
-      const isValid =
-        commandModule.data && typeof commandModule.execute === "function";
-      const isProdOnly = commandModule.prodOnly === true;
-
-      if (!isValid) {
-        logger.warn(`Skipped loading file ${file} - missing data or execute()`);
+      if (!commandModule.data) {
+        logger.warn(`Skipped ${file}: missing 'data' export`);
         continue;
       }
+
+      if (typeof commandModule.execute !== "function") {
+        logger.warn(`Skipped ${file}: 'execute' is not a function`);
+        continue;
+      }
+
+      if (!commandModule.data.name) {
+        logger.warn(`Skipped ${file}: command has no name`);
+        continue;
+      }
+
+      const isProdOnly = commandModule.prodOnly === true;
 
       if (isDev && isProdOnly) {
         logger.warn(`Skipped loading production only command: ${file}`);
