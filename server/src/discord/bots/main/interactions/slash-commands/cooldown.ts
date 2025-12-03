@@ -3,9 +3,8 @@ import {
   ChatInputCommandInteraction,
   PermissionFlagsBits,
 } from "discord.js";
-import { EmbedPresets, createEmbed } from "@/discord/embeds";
+import { EmbedPresets } from "@/discord/embeds";
 import { cooldownManager } from "@/discord/utils/cooldown/cooldown-manager";
-import { EmbedColors } from "@/discord/embeds/colors";
 
 /**
  * Slash command definition for the cooldown management command

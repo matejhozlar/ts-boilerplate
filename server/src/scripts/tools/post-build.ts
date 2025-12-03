@@ -1,23 +1,22 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const distDir = path.join(__dirname, "dist");
+const distDir = path.join(__dirname, "..", "..", "..", "dist");
 
 /**
- * Normalize path separators to forward slashes for import statements
+ * Normalize separators to forward slashes for import statements
  */
-function normalizeImportPath(importPath) {
+function normalizeImportPath(importPath: string): string {
   return importPath.replace(/\\/g, "/");
 }
 
 /**
  * Check if a path points to a directory with an index.js file
  */
-function hasIndexFile(basePath, importPath) {
+function hasIndexFile(basePath: string, importPath: string): boolean {
   const fullPath = path.join(basePath, importPath);
   const indexPath = path.join(fullPath, "index.js");
   return fs.existsSync(indexPath);
@@ -26,7 +25,7 @@ function hasIndexFile(basePath, importPath) {
 /**
  * Check if a file exists with .js extension
  */
-function fileExists(basePath, importPath) {
+function fileExists(basePath: string, importPath: string): boolean {
   const fullPath = path.join(basePath, importPath + ".js");
   return fs.existsSync(fullPath);
 }
@@ -34,7 +33,7 @@ function fileExists(basePath, importPath) {
 /**
  * Resolve @/ alias to relative path
  */
-function resolveAlias(fileDir, importPath) {
+function resolveAlias(fileDir: string, importPath: string): string {
   if (importPath.startsWith("@/")) {
     const pathWithoutAlias = importPath.slice(2);
     const targetPath = path.join(distDir, pathWithoutAlias);
@@ -46,7 +45,11 @@ function resolveAlias(fileDir, importPath) {
   return importPath;
 }
 
-function processImport(importPath, fileDir, distDir) {
+function processImport(
+  importPath: string,
+  fileDir: string,
+  distDir: string
+): string {
   if (importPath.endsWith(".js")) {
     return importPath;
   }
@@ -76,7 +79,7 @@ function processImport(importPath, fileDir, distDir) {
   return `${normalizedImport}.js`;
 }
 
-function fixImports(dir) {
+function fixImports(dir: string): void {
   const files = fs.readdirSync(dir);
 
   for (const file of files) {
@@ -91,7 +94,7 @@ function fixImports(dir) {
 
       content = content.replace(
         /(from|import)\s+['"]([^'"]+)['"];?/gm,
-        (match, keyword, importPath) => {
+        (match: string, keyword: string, importPath: string): string => {
           const fixedPath = processImport(importPath, fileDir, distDir);
           return `${keyword} '${fixedPath}';`;
         }
@@ -102,6 +105,6 @@ function fixImports(dir) {
   }
 }
 
-console.log("Fixing import paths...");
+console.log("Finalizing build...");
 fixImports(distDir);
-console.log("Import paths fixed!");
+console.log("Build done!");
