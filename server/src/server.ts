@@ -19,6 +19,8 @@ async function shutdown(httpServer: http.Server): Promise<void> {
   logger.info("Shutting down...");
 
   try {
+    await mainBot.destroy();
+
     httpServer.close(() => {
       logger.info("Server closed. Exiting...");
       process.exit(0);
