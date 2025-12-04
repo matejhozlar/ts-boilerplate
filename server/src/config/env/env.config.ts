@@ -8,6 +8,12 @@ dotenv.config({ quiet: true });
  * // Server
  * @property {number} PORT - Server port number (must be a positive integer, default 5000)
  * @property {string} NODE_ENV - Application environment (development, production, test)
+ * // Database
+ * @property {string} DB_USER - The PostgreSQL username
+ * @property {string} DB_HOST - The PostgreSQL host
+ * @property {string} DB_DATABASE - The name of the database
+ * @property {string} DB_PASSWORD - The database user's password
+ * @property {string} DB_PORT - The port PostgreSQL is running on
  * // Discord
  * @property {string} DISCORD_GUILD_ID - Discord server/guild ID (must be numeric snowflake)
  * @property {string} DISCORD_BOT_TOKEN - Discord bot authentication token
@@ -19,6 +25,20 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
+  // Server
+  DB_USER: z.string().min(1, "Database user is required"),
+  DB_HOST: z.string().min(1, "Database host is required"),
+  DB_DATABASE: z.string().min(1, "Database name is required"),
+  DB_PASSWORD: z.string().min(1, "Database password is required"),
+  DB_PORT: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(5432)
+    .refine((port) => port >= 1 && port <= 65535, {
+      message: "Database port must be between 1 and 65535",
+    }),
+
   // Discord
   DISCORD_GUILD_ID: z
     .string()
@@ -30,10 +50,7 @@ const envSchema = z.object({
   DISCORD_BOT_TOKEN: z
     .string()
     .min(1, "Bot token is required")
-    .regex(
-      /^[\w\-\.]+$/,
-      "Bot token must be a valid Discord token format"
-    ),
+    .regex(/^[\w\-\.]+$/, "Bot token must be a valid Discord token format"),
   DISCORD_BOT_ID: z
     .string()
     .min(1, "Bot ID is required")
