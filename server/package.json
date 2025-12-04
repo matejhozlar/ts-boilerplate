@@ -11,7 +11,7 @@
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
     "util:generate-structure": "node src/scripts/tools/generate-structure.js",
-    "util:env-generate": "tsx src/scripts/env/env-gen.ts",
+    "util:env-gen": "tsx src/scripts/env/env-gen.ts",
     "util:env-find": "tsx src/scripts/env/env-gen.ts",
     "util:import-find": "node src/scripts/dependency/import-find.js",
     "util:schema-info": "node src/scripts/db/get-table-info.js",
